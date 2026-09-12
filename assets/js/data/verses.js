@@ -248,7 +248,7 @@ CHAPTERS.forEach((chapter) => {
 
 export const TOTAL_VERSES = VERSES.length;
 
-/** جيران البيت (للمشغل الصوتي والتنقل) */
+/** الوصول السريع للبيت بالرقم (للتنقّل والروابط المباشرة) */
 export function verseAt(n) {
   return VERSES.find((v) => v.n === n) || null;
 }

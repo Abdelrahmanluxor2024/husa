@@ -1,5 +1,5 @@
 /* ==========================================================================
-   المكوّنات — الترويسة، الواجهة، الفهرس، بطاقات الأبيات، المشغل، النوافذ
+   المكوّنات — الترويسة، الواجهة، الفهرس، بطاقات الأبيات، النوافذ
    ========================================================================== */
 
 /* ==========================================================================
@@ -840,7 +840,7 @@
   opacity: 1;
 }
 
-/* حلقة التركيز أثناء الاستماع */
+/* حلقة التركيز على البيت المستهدف */
 .verse.is-focus {
   border-color: var(--gold);
   box-shadow: var(--shadow-card), 0 0 0 1px var(--gold), 0 0 46px -8px rgba(212, 175, 55, 0.5);
@@ -943,13 +943,6 @@
   font-style: normal;
   font-size: 0.62em;
   line-height: 1;
-}
-
-.verse__sadr.is-reading,
-.verse__ajz.is-reading {
-  color: var(--gold-bright);
-  text-shadow: 0 0 24px rgba(212, 175, 55, 0.4);
-  transition: color var(--t-fast), text-shadow var(--t-fast);
 }
 
 .verse mark {
@@ -1530,264 +1523,12 @@
 }
 
 /* ==========================================================================
-   12) المشغل الصوتي العائم
-   ========================================================================== */
-.player {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: var(--z-player);
-  background: var(--glass-strong);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border-top: 1px solid var(--line);
-  box-shadow: var(--shadow-float);
-  transform: translateY(115%);
-  transition: transform 0.42s var(--ease-out);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-.player.is-open {
-  transform: none;
-}
-.player::before {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  top: -1px;
-  height: 1px;
-  background: var(--rule-grad);
-}
-
-.player__bar {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.6rem, 2vw, 1.2rem);
-  padding: 0.7rem clamp(0.7rem, 2vw, 1.2rem);
-  width: min(100%, var(--container));
-  margin-inline: auto;
-}
-
-.player__play {
-  width: 54px;
-  height: 54px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--gold-grad);
-  color: #121d2a;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 10px 30px -12px rgba(212, 175, 55, 0.95), var(--glow-gold);
-  transition: transform var(--t-fast), box-shadow var(--t);
-  position: relative;
-}
-.player__play:hover {
-  transform: scale(1.06);
-  box-shadow: 0 12px 38px -10px rgba(212, 175, 55, 1), var(--glow-gold-strong);
-}
-.player__play svg {
-  width: 24px;
-  height: 24px;
-}
-.player__play .icon-pause {
-  display: none;
-}
-.player.is-playing .player__play .icon-play {
-  display: none;
-}
-.player.is-playing .player__play .icon-pause {
-  display: block;
-}
-.player.is-playing .player__play::after {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  animation: pulseRing 2.4s ease-out infinite;
-}
-
-.player__meta {
-  min-width: 0;
-  flex: 1 1 190px;
-}
-.player__track {
-  font-family: var(--font-heading);
-  font-size: 0.98rem;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.player__sub {
-  font-size: var(--fs-xs);
-  color: var(--ink-faint);
-  font-family: var(--font-heading);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.player__sub b {
-  color: var(--gold);
-  font-weight: 600;
-}
-
-.player__seek-wrap {
-  flex: 2 1 260px;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-width: 0;
-}
-.player__time {
-  font-family: var(--font-heading);
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-  min-width: 4.2ch;
-  text-align: center;
-}
-
-.seek {
-  position: relative;
-  flex: 1;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  touch-action: none;
-}
-.seek__track {
-  position: absolute;
-  inset-inline: 0;
-  height: 6px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.12);
-  overflow: hidden;
-}
-[data-theme='paper'] .seek__track {
-  background: rgba(36, 29, 18, 0.14);
-}
-.seek__fill {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  width: 0;
-  background: linear-gradient(90deg, var(--bronze), var(--gold), var(--gold-bright));
-  border-radius: 99px;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
-}
-.seek__dot {
-  position: absolute;
-  top: 50%;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: var(--gold-bright);
-  transform: translate(50%, -50%);
-  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.22);
-  transition: transform var(--t-fast);
-}
-.seek:hover .seek__dot,
-.seek.is-dragging .seek__dot {
-  transform: translate(50%, -50%) scale(1.22);
-}
-
-.player__tools {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex: none;
-}
-
-[data-theme='paper'] 
-/* قائمة المقاطع */
-.player__playlist {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.42s var(--ease-out);
-  border-top: 1px solid transparent;
-}
-.player.is-expanded .player__playlist {
-  max-height: 320px;
-  border-top-color: var(--line-soft);
-  overflow-y: auto;
-}
-.player__playlist ul {
-  padding: 0.7rem 0.9rem 0.9rem;
-  display: grid;
-  gap: 0.4rem;
-  width: min(100%, var(--container));
-  margin-inline: auto;
-}
-.track-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  text-align: start;
-  padding: 0.55rem 0.8rem;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
-  background: var(--glass-hi);
-  transition: all var(--t-fast);
-}
-.track-item:hover {
-  border-color: var(--line-strong);
-  background: rgba(212, 175, 55, 0.1);
-}
-.track-item.is-active {
-  border-color: var(--gold);
-  background: linear-gradient(160deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.06));
-}
-.track-item__idx {
-  font-family: var(--font-display);
-  color: var(--gold);
-  font-size: 0.9rem;
-  width: 2ch;
-}
-.track-item__name {
-  font-family: var(--font-heading);
-  font-size: 0.94rem;
-  color: var(--ink);
-}
-.track-item__desc {
-  font-size: var(--fs-xs);
-  color: var(--ink-faint);
-}
-.track-item__dur {
-  font-family: var(--font-heading);
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 860px) {
-  .player__bar {
-    flex-wrap: wrap;
-    row-gap: 0.5rem;
-  }
-  .player__meta {
-    flex: 1 1 auto;
-  }
-  .player__seek-wrap {
-    order: 6;
-    flex: 1 1 100%;
-  }
-}
-
-/* إتاحة مساحة أسفل الصفحة للمشغل */
-body.has-player {
-  padding-bottom: calc(var(--player-h) + 8px);
-}
-
-/* ==========================================================================
-   13) التنبيهات (Toasts)
+   12) التنبيهات (Toasts)
    ========================================================================== */
 .toast-stack {
   position: fixed;
   inset-inline: 0;
-  bottom: calc(var(--player-h) + 18px);
+  bottom: 1.4rem;
   z-index: var(--z-toast);
   display: grid;
   justify-items: center;
@@ -1834,7 +1575,7 @@ body.has-player {
 }
 
 /* ==========================================================================
-   14) أدوات مساعدة
+   13) أدوات مساعدة
    ========================================================================== */
 .stack-center {
   display: grid;
@@ -1875,8 +1616,8 @@ body.has-player {
 .to-top {
   position: fixed;
   inset-inline-end: 1rem;
-  bottom: calc(var(--player-h) + 16px);
-  z-index: calc(var(--z-player) - 1);
+  bottom: 1.2rem;
+  z-index: var(--z-base);
   opacity: 0;
   pointer-events: none;
   transition: all var(--t);
@@ -1888,6 +1629,5 @@ body.has-player {
 @media (max-width: 620px) {
   .to-top {
     inset-inline-end: 0.7rem;
-    bottom: calc(var(--player-h) + 68px);
   }
 }

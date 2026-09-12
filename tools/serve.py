@@ -45,8 +45,6 @@ MIME = {
     ".woff2": "font/woff2",
     ".ttf": "font/ttf",
     ".otf": "font/otf",
-    ".mp3": "audio/mpeg",
-    ".mp4": "video/mp4",
     ".txt": "text/plain; charset=utf-8",
     ".webmanifest": "application/manifest+json",
 }

@@ -86,7 +86,6 @@
 
   --container: 1180px;
   --header-h: 72px;
-  --player-h: 78px;
   --ease: cubic-bezier(0.22, 0.68, 0.24, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --t-fast: 0.16s var(--ease);
@@ -97,7 +96,6 @@
   --z-sticky: 40;
   --z-toc: 45;
   --z-header: 60;
-  --z-player: 70;
   --z-overlay: 90;
   --z-toast: 100;
 

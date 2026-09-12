@@ -5,71 +5,6 @@ import { CHAPTERS, VERSES, verseAt, verseIndex, toArabicDigits, TOTAL_VERSES } f
 import { qs, qsa, icon, toast, copyText, bus } from './util.js';
 import { favorites, viewFilter } from './state.js';
 import { verseCardHTML, versePlainText } from './card.js';
-import speech from './speech.js';
-
-/* ----------------------- حالة النطق لبيتٍ مفرد ----------------------- */
-let speakingVerse = null;
-let speakToken = 0;
-
-export function stopVerseSpeech() {
-  speakToken += 1;
-  speech.stop();
-  if (speakingVerse !== null) {
-    const card = qs(`#v-${speakingVerse}`);
-    card?.classList.remove('is-focus');
-    qsa('.verse__sadr, .verse__ajz', card || document).forEach((n) => n.classList.remove('is-reading'));
-    qsa('[data-tool="speak"]').forEach((b) => {
-      b.classList.remove('is-active');
-      b.setAttribute('aria-label', b.getAttribute('aria-label').replace('إيقاف نطق', 'نطق'));
-    });
-    speakingVerse = null;
-  }
-}
-
-async function speakVerse(v, btn) {
-  const already = speakingVerse === v.n;
-  bus.emit('recite:stop-all', { source: 'verse-tool' });
-  stopVerseSpeech();
-  if (already) return;
-
-  if (!speech.supported) {
-    toast('متصفحك لا يدعم النطق الصوتي — جرّب متصفحًا آخر (Chrome / Edge / Safari).', { iconName: 'info' });
-    return;
-  }
-
-  const card = qs(`#v-${v.n}`);
-  const sadrEl = qs('.verse__sadr', card);
-  const ajzEl = qs('.verse__ajz', card);
-  const token = ++speakToken;
-  speakingVerse = v.n;
-
-  btn?.classList.add('is-active');
-  card?.classList.add('is-focus');
-  card?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-
-  const tune = speech.tuning();
-  const opts = { rate: tune.rate, pitch: tune.pitch };
-  const stopIfChanged = () => token !== speakToken || speakingVerse !== v.n;
-
-  await speech.speak(
-    v.sadr,
-    { ...opts, onstart: () => sadrEl?.classList.add('is-reading'), onend: () => sadrEl?.classList.remove('is-reading') }
-  );
-  if (stopIfChanged()) return;
-  await new Promise((r) => setTimeout(r, tune.gap));
-  if (stopIfChanged()) return;
-  await speech.speak(
-    v.ajz,
-    { ...opts, onstart: () => ajzEl?.classList.add('is-reading'), onend: () => ajzEl?.classList.remove('is-reading') }
-  );
-  if (stopIfChanged()) return;
-
-  sadrEl?.classList.remove('is-reading');
-  ajzEl?.classList.remove('is-reading');
-  card?.classList.remove('is-focus');
-  btn?.classList.remove('is-active');
-  speakingVerse = null;
-}
 
 /* --------------------------- إضاءة بيتٍ معيّن --------------------------- */
 export function focusVerse(n, { scroll = true, cls = 'is-focus' } = {}) {
@@ -123,9 +58,6 @@ function chapterHTML(c) {
         <div class="chapter__meta">
           <span class="chip">الأبيات ${toArabicDigits(c.first)} – ${toArabicDigits(c.last)}</span>
           <span class="chip">${toArabicDigits(c.count)} بيتًا</span>
-          <button class="chip" type="button" data-chapter-play="${c.id}">
-            ${icon('headphones')} إلقاء الفصل صوتيًّا
-          </button>
         </div>
       </div>
     </div>
@@ -196,8 +128,6 @@ export function bindCardInteractions(root = document) {
       });
     } else if (tool === 'image') {
       bus.emit('quote:open', { n: v.n });
-    } else if (tool === 'speak') {
-      speakVerse(v, btn);
     } else if (tool === 'fav') {
       const added = favorites.toggle(v.n);
       updateStar(btn, added);
@@ -206,15 +136,6 @@ export function bindCardInteractions(root = document) {
         iconName: added ? 'star-filled' : 'star',
       });
     }
-  });
-
-  /* استماع فصلٍ كامل يبدأ من أول بيتٍ فيه */
-  root.addEventListener('click', (e) => {
-    const chip = e.target.closest('[data-chapter-play]');
-    if (!chip) return;
-    const chapter = CHAPTERS.find((c) => c.id === chip.dataset.chapterPlay);
-    if (!chapter || !chapter.verses.length) return;
-    bus.emit('audio:play-from', { n: chapter.verses[0].n, auto: true });
   });
 }
 
@@ -230,10 +151,6 @@ export function initRender() {
     if (viewFilter.active) applyFilter();
   });
   bus.on('filter:change', applyFilter);
-  bus.on('recite:stop-all', ({ source } = {}) => {
-    if (source !== 'verse-tool') stopVerseSpeech();
-  });
-
   // مؤشّر موضع القراءة في الترويسة (نسبة التمرير)
   const bar = qs('#progressBar');
   const onScroll = () => {

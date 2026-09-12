@@ -35,9 +35,6 @@ export function verseCardHTML(v, { showChapter = true } = {}) {
           <button class="icon-btn icon-btn--sm" type="button" data-tool="image" aria-label="تصدير البيت ${v.label} كصورة" title="تصدير كصورة">
             ${icon('image')}<span class="tip">تصدير كصورة</span>
           </button>
-          <button class="icon-btn icon-btn--sm" type="button" data-tool="speak" aria-label="نطق البيت ${v.label}" title="نطق صوتي">
-            ${icon('volume')}<span class="tip">نطق صوتي</span>
-          </button>
           <button class="icon-btn icon-btn--sm ${fav ? 'is-active' : ''}" type="button" data-tool="fav"
                   aria-pressed="${fav}" aria-label="إضافة البيت ${v.label} إلى المفضّلة" title="المفضّلة">
             ${icon(fav ? 'star-filled' : 'star')}<span class="tip">${fav ? 'إزالة من المفضّلة' : 'إضافة إلى المفضّلة'}</span>

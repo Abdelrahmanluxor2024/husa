@@ -7,7 +7,6 @@ import { theme, favorites, viewFilter } from './state.js';
 import { initRender, focusVerse, goToVerse } from './render.js';
 import { initSearch, openSearch } from './search.js';
 import { initQuote, openQuote } from './quote.js';
-import player from './player.js';
 
 /* ------------------------------ سنوات التذييل ------------------------------ */
 function setYear() {
@@ -31,10 +30,6 @@ function syncFavBadge() {
       ? 'إظهار كل الأبيات'
       : 'عرض الأبيات المفضّلة فقط';
   }
-  const playFavBtn = qs('#btnPlayFavs');
-  const clearBtn = qs('#btnClearFavs');
-  if (playFavBtn) playFavBtn.disabled = count === 0;
-  if (clearBtn) clearBtn.disabled = count === 0;
 }
 
 function wireFavorites() {
@@ -51,14 +46,6 @@ function wireFavorites() {
     if (on) scrollToEl(qs('#ch1'), 140);
   });
 
-  qs('#btnPlayFavs')?.addEventListener('click', () => {
-    const list = favorites.all();
-    if (!list.length) return;
-    player.open({ autoplay: false });
-    bus.emit('audio:play-from', { n: list[0], auto: true });
-    toast(`بدء الإلقاء من أول بيتٍ في مفضّلتك (البيت ${toArabicDigits(list[0])})`, { iconName: 'headphones' });
-  });
-
   qs('#btnClearFavs')?.addEventListener('click', () => {
     if (!favorites.count()) return;
     favorites.clear();
@@ -70,15 +57,6 @@ function wireFavorites() {
 function wireHeader() {
   qs('#btnSearch')?.addEventListener('click', () => openSearch(''));
   qs('#btnSearchToc')?.addEventListener('click', () => openSearch(''));
-
-  const openAudio = () => {
-    player.open({ autoplay: !player.isPlaying?.() });
-  };
-  qs('#btnAudio')?.addEventListener('click', openAudio);
-  qs('#btnHeroListen')?.addEventListener('click', () => {
-    player.open({ autoplay: true });
-    toast('بدأ إلقاء الأبيات — يتابع الموقع البيت المقروء تلقائيًّا.', { iconName: 'headphones' });
-  });
 
   qs('#btnTheme')?.addEventListener('click', (e) => {
     const mode = theme.toggle();
@@ -132,10 +110,7 @@ function wireFooter() {
     const action = a.dataset.action;
     if (action === 'search') openSearch('');
     else if (action === 'quote') openQuote();
-    else if (action === 'audio') {
-      player.open({ autoplay: false });
-      scrollToEl(qs('#ch1'), 120);
-    } else if (action === 'print') window.print();
+    else if (action === 'print') window.print();
     else if (action === 'theme') qs('#btnTheme')?.click();
   });
 }
@@ -150,7 +125,7 @@ function firstVisitHint() {
   if (store.get('visited')) return;
   store.set('visited', true);
   setTimeout(() => {
-    toast('مرحبًا بك — اضغط / للبحث الفوري في الأبيات الـ٧٧، أو زرّ السمّاعات لإلقاء الأبيات صوتيًّا.', {
+    toast('مرحبًا بك — اضغط / للبحث الفوري في الأبيات الـ٧٧، أو انسخ أيّ بيتٍ وصدّره صورةً.', {
       iconName: 'info',
       duration: 6000,
     });
@@ -190,7 +165,6 @@ function init() {
   initRender();
   initSearch();
   initQuote();
-  player.initPlayer();
   wireHeader();
   wireFavorites();
   wireFooter();
