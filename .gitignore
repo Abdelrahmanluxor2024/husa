@@ -1,0 +1,18 @@
+# اعتماديات وأدوات البناء
+node_modules/
+package-lock.json
+package.json
+
+# مخرجات وسيطة
+*.wav
+*.spec.png
+__pycache__/
+.venv/
+venv/
+
+# ملفات النظام والمحرّر
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

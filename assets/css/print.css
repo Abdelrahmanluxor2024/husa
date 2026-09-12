@@ -1,0 +1,187 @@
+/* ==========================================================================
+   نمط الطباعة — لإخراج المنظومة كاملةً على ورقٍ أبيض بأبهى صورة
+   ========================================================================== */
+@media print {
+  :root {
+    --ink: #000;
+    --ink-soft: #111;
+    --ink-muted: #333;
+    --ink-faint: #555;
+    --bg-0: #fff;
+  }
+
+  html {
+    background: #fff;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000;
+    font-size: 11pt;
+    padding-bottom: 0 !important;
+  }
+
+  body::before,
+  body::after,
+  .progress-bar,
+  .header,
+  .toc,
+  .player,
+  .toast-stack,
+  .to-top,
+  .overlay,
+  .hero__dust,
+  .hero__scroll,
+  .hero__actions,
+  .banner__actions,
+  .verse__tools,
+  .chapter__band::before,
+  .chapter__band::after,
+  .power__media,
+  .footer__links,
+  .skip-link {
+    display: none !important;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 0 0 1rem;
+    text-align: center;
+  }
+
+  .hero__bg,
+  .hero__veil {
+    display: none;
+  }
+
+  .hero__name,
+  .banner__name,
+  .gold-text,
+  .chapter__title {
+    background: none !important;
+    -webkit-text-fill-color: #000 !important;
+    color: #000 !important;
+    filter: none !important;
+    font-size: 22pt;
+  }
+
+  .hero__bismillah {
+    color: #000;
+    font-size: 14pt;
+    text-shadow: none;
+  }
+
+  .hero__tagline,
+  .hero__verse-note,
+  .chapter__tagline,
+  .power__text,
+  .footer__about {
+    color: #333 !important;
+  }
+
+  .verse,
+  .chapter__plate,
+  .stat,
+  .panel,
+  .power {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .verse {
+    margin-bottom: 6pt;
+    padding: 8pt 10pt;
+  }
+
+  .verse__num {
+    border-color: #999 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .verse__num span {
+    transform: none !important;
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+
+  .verse__text,
+  .verse__sadr,
+  .verse__ajz {
+    color: #000 !important;
+    font-size: 13pt;
+    line-height: 1.9;
+  }
+
+  .verse__sep i,
+  .chapter__ornament,
+  .diamond-row,
+  .qcard__diamonds {
+    color: #666 !important;
+  }
+
+  .chapter {
+    break-before: page;
+    page-break-before: always;
+  }
+  .chapter:first-of-type {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  .chapter__band {
+    min-height: auto;
+    margin: 0 0 10pt;
+    border: 0;
+    padding: 0;
+  }
+
+  .chapter__plate {
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .chapter__ordinal,
+  .stat__num,
+  .toc__link b {
+    color: #000 !important;
+  }
+
+  .banner::before {
+    display: none;
+  }
+
+  .banner {
+    border-top: 1px solid #ccc;
+    margin-top: 10pt;
+    padding: 12pt 0;
+    break-inside: avoid;
+  }
+
+  .banner__couplet {
+    color: #000;
+  }
+
+  .stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-color: #ccc;
+  }
+
+  .stat {
+    border: 0 !important;
+  }
+
+  a[href^='http']::after {
+    content: '';
+  }
+
+  .footer {
+    border-top: 1px solid #ccc;
+    background: #fff !important;
+  }
+}
