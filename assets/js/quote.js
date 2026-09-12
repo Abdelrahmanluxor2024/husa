@@ -470,27 +470,43 @@ export function drawCard() {
 
 /* ------------------------------ المعاينة والقياس ------------------------------ */
 /**
- * ضبط مقاس المعاينة: نُغيّر مقاس اللوحة في CSS (لا transform)
- * حتى يبقى المقاس المرئي مطابقًا للمقاس الفعلي في التخطيط، فلا يتجاوز
- * الإطار ولا يُحدث تمريرًا أفقيًّا داخل النافذة.
+ * ضبط مقاس المعاينة
+ * ----------------
+ * نُغيّر مقاس اللوحة **في CSS** (لا بـ transform) حتى يبقى المقاس المرئي
+ * مطابقًا للمقاس التخطيطي، فلا تتجاوز البطاقة إطارها ولا تُحدث تمريرًا أفقيًّا.
+ * نُعيد الضبط عند: فتح النافذة، تغيّر مقاس النافذة، وتغيّر مقاس المنصّة
+ * (ResizeObserver) — حتى لا تزحف البطاقة في أيّ مقاس شاشة.
  */
 function fitPreview() {
   const stage = qs('#qmStage');
   const canvas = state.canvas;
   if (!stage || !canvas || !canvas.width) return;
 
-  const stageW = stage.clientWidth || stage.getBoundingClientRect().width || 320;
-  const avail = Math.max(160, stageW - 34);
-  const availH = Math.max(220, Math.min((window.innerHeight || 800) * 0.66, 640));
-  const k = Math.min(avail / canvas.width, availH / canvas.height, 1);
+  const rect = stage.getBoundingClientRect();
+  const stageW = Math.max(200, rect.width || stage.clientWidth || 320);
+  const availW = Math.max(160, stageW - 34);
 
-  const w = Math.max(1, Math.round(canvas.width * k));
-  const h = Math.max(1, Math.round(canvas.height * k));
+  const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+  const availH = Math.max(220, Math.min(vh * 0.62, 620));
 
+  // معامل تصغير لا يتجاوز ١ أبدًا، ويحترم أصغر الحدّين (العرض/الارتفاع)
+  const k = Math.min(availW / canvas.width, availH / canvas.height, 1);
+  const w = Math.max(60, Math.floor(canvas.width * k));
+
+  // العرض فقط؛ الارتفاع يُحسب تلقائيًّا من نسبة اللوحة (مع height:auto في CSS)
   canvas.style.width = `${w}px`;
-  canvas.style.height = `${h}px`;
+  canvas.style.height = 'auto';
   canvas.style.maxWidth = '100%';
-  stage.style.minHeight = `${h + 34}px`;
+
+  const shownH = Math.round((canvas.height / canvas.width) * w);
+  stage.style.minHeight = `${shownH + 34}px`;
+}
+
+/** ضبط مزدوج: فورًا ثمّ بعد استقرار التخطيط */
+function fitPreviewSoon() {
+  fitPreview();
+  requestAnimationFrame(() => fitPreview());
+  setTimeout(fitPreview, 120);
 }
 
 function syncControls() {
@@ -502,12 +518,20 @@ function syncControls() {
   const label = qs('#qmVerseLabel');
   const v = verseAt(state.n);
   if (label && v) label.textContent = `البيت ${v.label} · ${v.chapterOrdinal}`;
+
+  // تسمية المقاس الفعلي للتصدير
+  const caption = qs('#qmCaption');
+  const dims = RATIOS[state.ratio] || RATIOS['1x1'];
+  if (caption) {
+    const name = { '1x1': 'مربّعة', '16x9': 'عريضة', '9x16': 'ستوري' }[state.ratio] || '';
+    caption.textContent = `${name} — التصدير بالحجم الكامل ${toArabicDigits(dims.w)} × ${toArabicDigits(dims.h)} بكسل`;
+  }
 }
 
 export function refresh() {
   drawCard();
   syncControls();
-  fitPreview();
+  fitPreviewSoon();
 }
 
 /**
@@ -669,9 +693,20 @@ export function initQuote() {
     toast(ok ? 'نُسخ نصّ البيت' : 'تعذّر النسخ', { iconName: ok ? 'copy' : 'info' });
   });
 
+  // إعادة الضبط عند تغيّر مقاس النافذة
   window.addEventListener('resize', () => {
-    if (isOpen()) fitPreview();
+    if (isOpen()) fitPreviewSoon();
   });
+
+  // إعادة الضبط عند تغيّر مقاس منصّة المعاينة نفسها (أدقّ من resize)
+  const stage = qs('#qmStage');
+  if (stage && typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => {
+      if (isOpen()) fitPreview();
+    });
+    ro.observe(stage);
+    state.stageObserver = ro;
+  }
 
   // اختصارات داخل النافذة
   overlay.addEventListener('keydown', (e) => {

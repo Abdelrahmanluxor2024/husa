@@ -1440,12 +1440,13 @@
 }
 @media (max-width: 900px) {
   .qm__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .qm__stage {
-  padding: 1rem;
+  position: relative;
+  padding: 1.15rem 1rem 1rem;
   border-inline-end: 1px solid var(--line-soft);
   display: grid;
   place-items: start center;
@@ -1459,6 +1460,17 @@
   background-position: 0 0, 12px 12px;
   min-height: 260px;
   overflow: hidden;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px var(--line-soft), inset 0 0 60px rgba(0, 0, 0, 0.35);
+}
+
+.qm__caption {
+  margin: 0.75rem auto 0.15rem;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
 }
 @media (max-width: 900px) {
   .qm__stage {
@@ -1508,8 +1520,10 @@
 }
 .qm__scaler canvas {
   display: block;
+  width: auto;
   max-width: 100%;
   height: auto;
+  aspect-ratio: auto;
   border-radius: 20px;
   box-shadow: 0 34px 80px -36px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(212, 175, 55, 0.16);
   background: #0b0e14;
